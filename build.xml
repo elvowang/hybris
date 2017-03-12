@@ -5,9 +5,7 @@
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <!-- fixed and required by Hybris OOTB ant build.xml -->
   <property name="platformhome" location="${basedir}/bin/platform"/>
-  <!-- load Hybris OOTB `ant-contrib`. -->
-	<taskdef resource="net/sf/antcontrib/antlib.xml" 
-    classpath="${platformhome}/lib/ant-contrib-1.0b3.jar" />
+
 <!--===================================================================
   Requirements
     - `JAVA_HOME` - version greater than v8.
@@ -19,13 +17,18 @@
 ====================================================================-->
   <property environment="env"/>
   <property name="HYB_BIN_DIR" value="${env.HYB_BIN_DIR}" unless:set="HYB_BIN_SRC"/>
-  <!-- common commands -->
   <!-- common directories -->
   <property name="dir.bin" value="${basedir}/bin" />
   <property name="dir.etc" value="${basedir}/etc" />
   <property name="dir.tmp" value="${java.io.tmpdir}"/>
+
   <!-- import Hybris OOTB `ant` build.xml directly (if exists). -->
   <import file="${basedir}/bin/platform/build.xml" optional="true" />
+
+  <!-- load Hybris OOTB `ant-contrib`. -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml"
+    classpath="${HYB_BIN_DIR}/platform/lib/ant-contrib-1.0b3.jar" />
+
 <!--
 ======================================================================
   Project Properties
@@ -38,23 +41,29 @@
   <condition property="platform.exists">
     <available file="${platformhome}" type="dir" />
   </condition>
+
   <condition property="dotenv.exists">
     <available file="${basedir}/.env" type="file"/>
   </condition>
+
+  <condition property="custom.exists">
+    <available file="${basedir}/bin/custom" type="dir"/>
+  </condition>
+
   <condition property="settings.exists">
     <available file="${dir.etc}" type="dir"/>
   </condition>
 
 <!--===================================================================
-  Hybris OOTB Tagets MOD. 
+  Hybris OOTB Tagets MOD.
 ====================================================================-->
 
 <!--===================================================================
-  Functional Helpers. 
+  Functional Helpers.
 ====================================================================-->
 <macrodef name="createSettingsProfile">
   <attribute name="profile" default="develop" />
-  <attribute name="template" default="develop" /> 
+  <attribute name="template" default="develop" />
 
   <sequential>
     <ant dir="${platformhome}" target="createConfig" >
@@ -70,7 +79,7 @@
 
 
 <!--===================================================================
-  Hybris Scaffoldings. 
+  Hybris Scaffoldings.
 ====================================================================-->
   <target name="env" if="dotenv.exists" description="try load .env properties">
     <loadproperties srcfile="${basedir}/.env"/>
@@ -79,9 +88,9 @@
   </target>
 
   <target name="source" unless="platform.exists" depends="env">
-    <sync todir="${dir.bin}">
-      <fileset dir="${HYB_BIN_DIR}"/>
-    </sync>
+    <copy todir="${dir.bin}/">
+      <fileset dir="${HYB_BIN_DIR}/"/>
+    </copy>
   </target>
 
   <target name="createSettings" unless="settings.exists" depends="source">
@@ -105,14 +114,18 @@
   </target>
 
   <!--
-  All these compilation related targets involve `configure` for updating settings profile. 
+  All these compilation related targets involve `configure` for updating settings profile.
   -->
+  <target name="all" depends="configure">
+    <ant dir="${platformhome}" target="all" />
+  </target>
+
   <target name="build" depends="configure">
     <ant dir="${platformhome}" target="build" />
   </target>
 
-  <target name="all" depends="configure">
-    <ant dir="${platformhome}" target="all" />
+  <target name="deploy" depends="configure">
+    <ant dir="${platformhome}" target="deploy" />
   </target>
 
   <target name="initialize" depends="configure">
@@ -141,4 +154,4 @@
     <delete file="${basedir}/velocity.log"/>
   </target>
 
-</project >
+</project>
