@@ -45,7 +45,7 @@
 
 - simple, elegant and performant :heart:
 - first class integration with Hybris OOTB automations.
-- fast and stable, especially comparing to `Gradle` :shit:.
+- fast and stable, especially comparing to [Gradle](https://gradle.org/) :shit:.
 
 **NOTE** Hybris OOTB ant tasks remain the same.
 
