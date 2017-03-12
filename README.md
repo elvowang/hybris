@@ -24,7 +24,7 @@
 * `config/develop` - settings profile for development (default), generated via Hybris `develop` template.
 * `config/testing` - settings profile for online testing, generated via Hybris `production` template.
 
-**NOTE** you can add any other settings profile using following command:
+**NOTE** you generate new settings profile using following command:
 
   ```bash
   ant createConfig -DHYBRIS_CONFIG_DIR=`pwd`/config/<profile> -Dinput.template=<develop or production>
