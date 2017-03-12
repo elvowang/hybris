@@ -55,5 +55,6 @@
 - [x] Hybris OOTB ant tasks integrations.
 - [x] Multi settings profiles supports.
 - [x] daemon server supports.
+- [ ] create new settings profile.
 - [ ] checkstyle integration (pre-build).
 - [ ] running server detections.
