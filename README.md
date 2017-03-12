@@ -43,9 +43,9 @@
 
 ### Why `Ant`?
 
+- simple, elegant and performant :heart:
 - first class integration with Hybris OOTB automations.
-- stable and fast especially comparing to `Gradle` :shit:.
-- simple, stable, elegant and performant :heart:
+- fast and stable, especially comparing to `Gradle` :shit:.
 
 **NOTE** Hybris OOTB ant tasks remain the same.
 
