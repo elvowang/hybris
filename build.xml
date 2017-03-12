@@ -176,6 +176,10 @@
     <executeAntTask target="intialize" />
   </target>
 
+  <target name="integrationtests">
+    <executeAntTask target="integrationtests" />
+  </target>
+
   <target name="startHybrisServer" depends="REMIND">
   <!-- accept CLI argument to determine whether to run server in daemon mode. -->
   <!--
@@ -224,6 +228,14 @@
 
   <target name="stopSolrServer">
     <executeAntTask target="stopSolrServer" />
+  </target>
+
+  <target name="unittests">
+    <executeAntTask target="unittests" />
+  </target>
+
+  <target name="updatesystem">
+    <executeAntTask target="updatesystem" />
   </target>
 
 
