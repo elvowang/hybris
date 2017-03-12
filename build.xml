@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="hybris" basedir="." default="build"
+    xmlns:if="ant:if"
+    xmlns:unless="ant:unless">
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <!-- fixed and required by Hybris OOTB ant build.xml -->
+  <property name="platformhome" location="${basedir}/bin/platform"/>
+  <!-- load Hybris OOTB `ant-contrib`. -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" 
+    classpath="${platformhome}/lib/ant-contrib-1.0b3.jar" />
+<!--===================================================================
+  Requirements
+    - `JAVA_HOME` - version greater than v8.
+    - `ANT_HOME` >= v1.9.0.
+    - `ANT_OPTS` - `ANT_OPTS=-Xmx512m -Dfile.encoding=UTF-8`
+
+  Prerequisites Settings and Properties.
+  `HYB_BIN_DIR` -> CLI argument > System.env.
+====================================================================-->
+  <property environment="env"/>
+  <property name="HYB_BIN_DIR" value="${env.HYB_BIN_DIR}" unless:set="HYB_BIN_SRC"/>
+  <!-- common commands -->
+  <!-- common directories -->
+  <property name="dir.bin" value="${basedir}/bin" />
+  <property name="dir.etc" value="${basedir}/etc" />
+  <property name="dir.tmp" value="${java.io.tmpdir}"/>
+  <!-- import Hybris OOTB `ant` build.xml directly (if exists). -->
+  <import file="${basedir}/bin/platform/build.xml" optional="true" />
+<!--
+======================================================================
+  Project Properties
+======================================================================
+-->
+  <condition property="is.windows" value="true" else="false">
+    <os family="windows" />
+  </condition>
+  <!-- files/dirs existences -->
+  <condition property="platform.exists">
+    <available file="${platformhome}" type="dir" />
+  </condition>
+  <condition property="dotenv.exists">
+    <available file="${basedir}/.env" type="file"/>
+  </condition>
+  <condition property="settings.exists">
+    <available file="${dir.etc}" type="dir"/>
+  </condition>
+
+<!--===================================================================
+  Hybris OOTB Tagets MOD. 
+====================================================================-->
+
+<!--===================================================================
+  Functional Helpers. 
+====================================================================-->
+<macrodef name="createSettingsProfile">
+  <attribute name="profile" default="develop" />
+  <attribute name="template" default="develop" /> 
+
+  <sequential>
+    <ant dir="${platformhome}" target="createConfig" >
+      <property name="input.template" value="@{template}"/>
+      <property name="HYBRIS_CONFIG_DIR" value="${dir.tmp}/@{profile}"/>
+      <!-- production template ONLY -->
+      <property name="JAVAMEM" value="3G" />
+    </ant>
+
+    <move file="${dir.tmp}/@{profile}" tofile="${dir.etc}/@{profile}"/>
+  </sequential>
+</macrodef>
+
+
+<!--===================================================================
+  Hybris Scaffoldings. 
+====================================================================-->
+  <target name="env" if="dotenv.exists" description="try load .env properties">
+    <loadproperties srcfile="${basedir}/.env"/>
+    <!-- safeguard to ensure we have Hybris `bin` package appointed in System.env -->
+    <fail unless="HYB_BIN_DIR" message="Hybris `bin` package is missing" />
+  </target>
+
+  <target name="source" unless="platform.exists" depends="env">
+    <sync todir="${dir.bin}">
+      <fileset dir="${env.HYB_BIN_DIR}"/>
+    </sync>
+  </target>
+
+  <target name="createSettings" unless="settings.exists" depends="source">
+    <createSettingsProfile profile="develop" template="develop" />
+    <createSettingsProfile profile="testing" template="production" />
+  </target>
+
+  <target name="configure">
+    <property name="dir.config" value="${basedir}/config" />
+    <property name="config" value="develop" unless:set="config"/>
+    <echo message="----------------------------------------------------------------------" />
+    <echo message=" Updating Hybris Configuration Using *${config}* Settings Profile" />
+    <echo message="----------------------------------------------------------------------" />
+    <mkdir dir="${dir.config}" />
+    <sync todir="${dir.config}/" overwrite="true">
+      <fileset dir="${dir.etc}/${config}/"/>
+    </sync>
+  </target>
+
+  <target name="bootstrap" depends="createSettings,all">
+  </target>
+
+  <!--
+  All these compilation related targets involve `configure` for updating settings profile. 
+  -->
+  <target name="build" depends="configure">
+    <ant dir="${platformhome}" target="build" />
+  </target>
+
+  <target name="all" depends="configure">
+    <ant dir="${platformhome}" target="all" />
+  </target>
+
+  <target name="initialize" depends="configure">
+    <ant dir="${platformhome}" target="initialize" />
+  </target>
+
+ <target name="purge" description="clean up everything (except source.) back to stage 0">
+    <echo message="======================================================================"/>
+    <echo message=" Ready to *ERASE* all the data in 5 seconds..."/>
+    <echo message="======================================================================"/>
+    <echo message=" ██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗ "/>
+    <echo message=" ██║    ██║██╔══██╗██╔══██╗████╗  ██║██║████╗  ██║██╔════╝ "/>
+    <echo message=" ██║ █╗ ██║███████║██████╔╝██╔██╗ ██║██║██╔██╗ ██║██║  ███╗ "/>
+    <echo message=" ██║███╗██║██╔══██║██╔══██╗██║╚██╗██║██║██║╚██╗██║██║   ██║ "/>
+    <echo message=" ╚███╔███╔╝██║  ██║██║  ██║██║ ╚████║██║██║ ╚████║╚██████╔╝ "/>
+    <echo message="  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚═════╝  "/>
+    <echo message="======================================================================"/>
+    <sleep seconds="5"/>
+    <echo message=" Start purging the whole Hybris instance..."/>
+    <echo message="======================================================================"/>
+    <delete dir="${basedir}/config" />
+    <delete dir="${basedir}/data" />
+    <delete dir="${basedir}/log" />
+    <delete dir="${basedir}/roles" />
+    <delete dir="${basedir}/temp" />
+    <delete file="${basedir}/velocity.log"/>
+  </target>
+
+</project >
