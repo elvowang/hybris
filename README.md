@@ -36,5 +36,5 @@
 ### TODOs
 - [x] Hybris OOTB ant tasks integrations.
 - [x] Multi settings profiles supports.
-- [ ] daemon server supports.
+- [x] daemon server supports.
 - [ ] running server detections.
