@@ -230,19 +230,19 @@
 <!--===================================================================
   Hybris Scaffoldings.
 ====================================================================-->
-  <target name="env" if="dotenv.exists" description="try load project's .env properties">
+  <target name="-env" if="dotenv.exists" description="try load project's .env properties">
     <loadproperties srcfile="${basedir}/.env"/>
     <!-- safeguard to ensure we have Hybris `bin` package appointed in System.env -->
     <fail unless="HYB_BIN_DIR" message="Hybris `bin` package is missing" />
   </target>
 
-  <target name="source" unless="platform.exists" depends="env">
+  <target name="-source" unless="platform.exists" depends="-env">
     <copy todir="${dir.bin}/">
       <fileset dir="${HYB_BIN_DIR}/"/>
     </copy>
   </target>
 
-  <target name="bootstrap" depends="source">
+  <target name="bootstrap" depends="-source">
     <createSettingsProfile profile="develop" template="develop" />
     <createSettingsProfile profile="testing" template="production" />
   </target>

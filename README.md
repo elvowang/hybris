@@ -37,8 +37,6 @@
 
 ### Scaffoldings 
 
-- `env` - dotenv supports.
-- `source` - synchronize Hybris packages (defined via `HYB_BIN_DIR`) to `bin` folder.
 - `bootstrap` - create a new instance with multi settings profiles supports (develop/develop, testing/production).
 - `purge` - delete all generated data files and folders (`data`, `log`, `roles`, `temp` and `velocity.log`).
 
