@@ -26,7 +26,7 @@
 
 ### Why `Ant`?
 
-- first class integreation with Hybris OOTB automations.
+- first class integration with Hybris OOTB automations.
 - stable and fast especially comparing to `Gradle`.
 - simple and work~
 
