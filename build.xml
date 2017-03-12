@@ -80,7 +80,7 @@
 
   <target name="source" unless="platform.exists" depends="env">
     <sync todir="${dir.bin}">
-      <fileset dir="${env.HYB_BIN_DIR}"/>
+      <fileset dir="${HYB_BIN_DIR}"/>
     </sync>
   </target>
 
