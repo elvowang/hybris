@@ -17,6 +17,13 @@
 ====================================================================
 -->
   <property environment="env"/>
+  <!-- common commands -->
+  <condition property="cmd.hybris" 
+      value="${platformhome}/hybrisserver.bat" 
+      else="${platformhome}/hybrisserver.sh">
+    <os family="windows" />
+  </condition>
+
   <!-- common directories -->
   <property name="dir.bin"    value="${basedir}/bin" />
   <property name="dir.config" value="${basedir}/config" />
@@ -82,6 +89,25 @@
     </sequential>
   </macrodef>
 
+  <macrodef name="execute">
+    <attribute name="cmd" />
+    <attribute name="dir" default="${basedir}" />
+    <element name="args" implicit="yes" />
+
+    <sequential>
+      <!-- available for Windows ONLY -->
+      <exec osfamily="windows" dir="@{dir}" executable="cmd">
+        <arg value="/c"/>
+        <arg value="@{cmd}"/>
+        <args />
+      </exec>
+      <!-- available for *nix ONLY -->
+      <exec osfamily="unix" dir="@{dir}" executable="@{cmd}">
+        <args />
+      </exec>
+    </sequential>
+  </macrodef>
+
   <macrodef name="executeAntTask">
     <attribute name="target" /> 
 
@@ -92,87 +118,39 @@
     </sequential>
   </macrodef>
 
-  <macrodef name="startHybrisServer">
-    <sequential>
-      <if>
-        <os family="windows" />
-        <then>
-          <exec dir="${platformhome}" executable="cmd.exe" osfamily="windows">
-            <arg line="/c" />
-            <arg line="hybrisserver.bat" />
-            <arg line="run"/>
-            <arg line="debug" />
-            <arg line="-DHYBRIS_CONFIG_DIR=${HYBRIS_CONFIG_DIR}" />
-          </exec>
-        </then>
-        <else>
-          <exec dir="${platformhome}" executable="sh" osfamily="unix">
-            <arg line="hybrisserver.sh" />
-            <arg line="run"/>
-            <arg line="debug" />
-            <arg line="-DHYBRIS_CONFIG_DIR=${HYBRIS_CONFIG_DIR}" />
-          </exec>
-        </else>
-      </if>
-    </sequential>
-  </macrodef>
-
-  <macrodef name="startHybrisServerAsDaemon">
-    <sequential>
-      <if>
-        <os family="windows" />
-        <then>
-          <exec dir="${platformhome}" executable="cmd.exe" osfamily="windows">
-            <arg line="/c" />
-            <arg line="hybrisserver.bat" />
-            <arg line="start" />
-            <arg line="-DHYBRIS_CONFIG_DIR=${HYBRIS_CONFIG_DIR}" />
-          </exec>
-        </then>
-        <else>
-          <exec dir="${platformhome}" executable="sh" osfamily="unix">
-            <arg line="hybrisserver.sh" />
-            <arg line="start"/>
-            <arg line="-DHYBRIS_CONFIG_DIR=${HYBRIS_CONFIG_DIR}" />
-          </exec>
-        </else>
-      </if>
-    </sequential>
-  </macrodef>
-
 <!--
 ===================================================================
   Hybris OOTB Targets MOD.
 ===================================================================
 -->
-  <target name="REMIND">
+  <target name="-CONFIG-">
     <echo message="----------------------------------------------------------------------"/>
     <echo message="    `HYBRIS_CONFIG_DIR`  => ${HYBRIS_CONFIG_DIR}"/>
     <echo message="----------------------------------------------------------------------"/>
     <sleep seconds="1"/>
   </target>
 
-  <target name="all" depends="REMIND">
+  <target name="all" depends="-CONFIG-">
     <executeAntTask target="all" />
   </target>
 
-  <target name="build" depends="REMIND">
+  <target name="build" depends="-CONFIG-">
     <executeAntTask target="build" />
   </target>
 
-  <target name="clean" depends="REMIND">
+  <target name="clean" depends="-CONFIG-">
     <executeAntTask target="clean" />
   </target>
 
-  <target name="customize" depends="REMIND">
+  <target name="customize" depends="-CONFIG-">
     <executeAntTask target="customize" />
   </target>
 
-  <target name="deploy" depends="REMIND">
+  <target name="deploy" depends="-CONFIG-">
     <executeAntTask target="deploy" />
   </target>
 
-  <target name="initialize" depends="REMIND">
+  <target name="initialize" depends="-CONFIG-">
     <executeAntTask target="intialize" />
   </target>
 
@@ -180,12 +158,8 @@
     <executeAntTask target="integrationtests" />
   </target>
 
-  <target name="startHybrisServer" depends="REMIND">
+  <target name="startHybrisServer" depends="-CONFIG-">
   <!-- accept CLI argument to determine whether to run server in daemon mode. -->
-  <!--
-    startHybrisServer -> foreground runner with debug enabled.
-    startHybrisServerAsDaemon -> background daemon service without debug mode.
-  -->
     <if>
       <and>
         <isset property="mode"/>
@@ -195,31 +169,25 @@
         <echo message="----------------------------------------------------------------------"/>
         <echo message="    Starting Tomcat as daemon service ..."/>
         <echo message="----------------------------------------------------------------------"/>
-        <startHybrisServerAsDaemon />
+        <execute cmd="${cmd.hybris}" dir="${platformhome}">
+          <arg value="start" />
+          <arg value="-DHYBRIS_CONFIG_DIR=${HYBRIS_CONFIG_DIR}" />
+        </execute>
       </then>
       <else>
-        <startHybrisServer />
+        <execute cmd="${cmd.hybris}" dir="${platformhome}">
+          <arg value="run" />
+          <arg value="debug" />
+          <arg value="-DHYBRIS_CONFIG_DIR=${HYBRIS_CONFIG_DIR}" />
+        </execute>
       </else>
     </if>
   </target>
 
   <target name="stopHybrisServer">
-    <if>
-      <os family="windows" />
-      <then>
-        <exec dir="${platformhome}" executable="cmd.exe" osfamily="windows">
-          <arg line="/c" />
-          <arg line="hybrisserver.bat" />
-          <arg line="stop" />
-        </exec>
-      </then>
-      <else>
-        <exec dir="${platformhome}" executable="sh" osfamily="unix">
-          <arg line="hybrisserver.sh" />
-          <arg line="stop" />
-        </exec>
-      </else>
-    </if>
+    <execute cmd="${cmd.hybris}" dir="${platformhome}">
+      <arg value="stop" />
+    </execute>
   </target>
 
   <target name="startSolrServer">
