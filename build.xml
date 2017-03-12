@@ -82,6 +82,16 @@
     </sequential>
   </macrodef>
 
+  <macrodef name="executeAntTask">
+    <attribute name="target" /> 
+
+    <sequential>
+      <ant dir="${platformhome}" target="@{target}">
+        <property name="HYBRIS_CONFIG_DIR" value="${HYBRIS_CONFIG_DIR}"/>
+      </ant>
+    </sequential>
+  </macrodef>
+
   <macrodef name="startHybrisServer">
     <sequential>
       <if>
@@ -135,50 +145,38 @@
   Hybris OOTB Targets MOD.
 ===================================================================
 -->
-  <target name="remindme">
+  <target name="REMIND">
     <echo message="----------------------------------------------------------------------"/>
     <echo message="    `HYBRIS_CONFIG_DIR`  => ${HYBRIS_CONFIG_DIR}"/>
     <echo message="----------------------------------------------------------------------"/>
     <sleep seconds="1"/>
   </target>
 
-  <target name="all" depends="remindme">
-    <ant dir="${platformhome}" target="all">
-      <property name="HYBRIS_CONFIG_DIR" value="${HYBRIS_CONFIG_DIR}"/>
-    </ant>
+  <target name="all" depends="REMIND">
+    <executeAntTask target="all" />
   </target>
 
-  <target name="build" depends="remindme">
-    <ant dir="${platformhome}" target="build">
-      <property name="HYBRIS_CONFIG_DIR" value="${HYBRIS_CONFIG_DIR}"/>
-    </ant>
+  <target name="build" depends="REMIND">
+    <executeAntTask target="build" />
   </target>
 
-  <target name="clean" depends="remindme">
-    <ant dir="${platformhome}" target="clean">
-      <property name="HYBRIS_CONFIG_DIR" value="${HYBRIS_CONFIG_DIR}"/>
-    </ant>
+  <target name="clean" depends="REMIND">
+    <executeAntTask target="clean" />
   </target>
 
-  <target name="customize" depends="remindme">
-    <ant dir="${platformhome}" target="customize">
-      <property name="HYBRIS_CONFIG_DIR" value="${HYBRIS_CONFIG_DIR}"/>
-    </ant>
+  <target name="customize" depends="REMIND">
+    <executeAntTask target="customize" />
   </target>
 
-  <target name="deploy" depends="remindme">
-    <ant dir="${platformhome}" target="deploy">
-      <property name="HYBRIS_CONFIG_DIR" value="${HYBRIS_CONFIG_DIR}"/>
-    </ant>
+  <target name="deploy" depends="REMIND">
+    <executeAntTask target="deploy" />
   </target>
 
-  <target name="initialize" depends="remindme">
-    <ant dir="${platformhome}" target="initialize">
-      <property name="HYBRIS_CONFIG_DIR" value="${HYBRIS_CONFIG_DIR}"/>
-    </ant>
+  <target name="initialize" depends="REMIND">
+    <executeAntTask target="intialize" />
   </target>
 
-  <target name="startHybrisServer" depends="remindme">
+  <target name="startHybrisServer" depends="REMIND">
   <!-- accept CLI argument to determine whether to run server in daemon mode. -->
   <!--
     startHybrisServer -> foreground runner with debug enabled.
@@ -221,15 +219,11 @@
   </target>
 
   <target name="startSolrServer">
-    <ant dir="${platformhome}" target="startSolrServer">
-      <property name="HYBRIS_CONFIG_DIR" value="${HYBRIS_CONFIG_DIR}"/>
-    </ant>
+    <executeAntTask target="startSolrServer" />
   </target>
 
   <target name="stopSolrServer">
-    <ant dir="${platformhome}" target="stopSolrServer">
-      <property name="HYBRIS_CONFIG_DIR" value="${HYBRIS_CONFIG_DIR}"/>
-    </ant>
+    <executeAntTask target="stopSolrServer" />
   </target>
 
 

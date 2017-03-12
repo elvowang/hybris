@@ -1,6 +1,6 @@
-# Hybris
+# Hybris Development Boilerplate
 
-## Ant based Hybris automations.
+## An [ant](http://ant.apache.org/) based Hybris development boiloerplate with automations.
 
 ### Prequiresites
 
@@ -19,21 +19,41 @@
   ant bootstrap
   ```
 
+`bootstrap` will first try load `.env` from `${basedir}` to provide additional settings supports, then pre-defined Hybris packages will be copied into `bin` folder. Two settings profiles will be generated under `config` folder afterward:
+
+* `config/develop` - settings profile for development (default), generated via Hybris `develop` template.
+* `config/testing` - settings profile for online testing, generated via Hybris `production` template.
+
+**NOTE** you can add any other settings profile using following command:
+
+  ```bash
+  ant createConfig -DHYBRIS_CONFIG_DIR=`pwd`/config/<profile> -Dinput.template=<develop or production>
+  ```
+
+### OOTB MOD
+
+- `startHybrisServer` - starts Hybris server at the foreground (default) or background (via `-Dmode=start`, synonym to tomcat arguments).
+- `stopHybrisServer` - stops Hybris server at the background (if any).
+
 ### Scaffoldings 
 
-- `bootstrap` - synchronize the packages to create a new instance with multi settings profiles supports (develop/develop, testing/production).
+- `env` - dotenv supports.
+- `source` - synchronize Hybris packages (defined via `HYB_BIN_DIR`) to `bin` folder.
+- `bootstrap` - create a new instance with multi settings profiles supports (develop/develop, testing/production).
+- `purge` - delete all generated data files and folders (`data`, `log`, `roles`, `temp` and `velocity.log`).
 
 
 ### Why `Ant`?
 
 - first class integration with Hybris OOTB automations.
-- stable and fast especially comparing to `Gradle`.
-- simple and work~
+- stable and fast especially comparing to `Gradle` :shit:.
+- simple, stable, elegant and performant :heart:
 
 **NOTE** Hybris OOTB ant tasks remain the same.
 
 
 ### TODOs
+- [x] editor/IDE/GIT settings.
 - [x] Hybris OOTB ant tasks integrations.
 - [x] Multi settings profiles supports.
 - [x] daemon server supports.
