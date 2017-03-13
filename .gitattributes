@@ -3,4 +3,5 @@
 *.exe -text
 *.jpg -text
 *.txt -text
-*.jar -binary
+
+*.jar binary
